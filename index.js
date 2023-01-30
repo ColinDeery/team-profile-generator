@@ -87,4 +87,51 @@ let teamMembers = [];
 const engineers = [];
 const interns = [];
 
-prompt 
+function addEngineer() {
+    inquirer
+        .prompt(engineerQuestions)
+        .then(engineerData => {
+            engineers.push(new Engineer(engineerData.engineerName, engineerData.ID, engineerData.email, engineerData.github));
+            displayMenu();
+        });
+}
+
+function addIntern() {
+    inquirer
+        .prompt(internQuestions)
+        .then(internData => {
+            interns.push(new Intern(internData.internName, internData.ID, internData.email, internData.school));
+            displayMenu();
+        });
+}
+
+function displayMenu() {
+    inquirer
+        .prompt(menuPromtps)
+        .then(menuResponses => {
+            if (menuResponses.next === `Add an engineer`) {
+                addEngineer();
+            } else if (menuResponses.next === `Add an intern`) {
+                addIntern()
+            } else {
+                teamMembers = teamMembers.concat(engineers).concat(interns);
+                fs.writeFile('./dist/index.html', createHTML(teamMembers),
+                    console.log(`Team Profile has been created.`)
+                );
+            }
+            return;
+        });
+}
+
+function init() {
+    console.log(`Begin generating team profile by entering manager's data.`);
+
+    inquirer
+        .prompt(managerQuestions)
+        .then(managerData => {
+            teamMembers.push(new Manager(managerData.managerName, managerData.ID, managerData.email, managerData.officeNumber));
+            displayMenu();
+        });
+}
+
+init();
